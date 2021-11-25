@@ -1,7 +1,6 @@
+import { BaseComponent } from "./baseComponent.js";
 
-export class ImageComponent {
-  private element: HTMLElement;
-
+export class ImageComponent extends BaseComponent<HTMLElement>{
   constructor(title: string, url: string){
     // <template> 태그
     const template = document.createElement('template');
@@ -15,7 +14,9 @@ export class ImageComponent {
         <p class="image__title"></p>
     </section>`;
 
-    this.element = template.content.firstElementChild! as HTMLElement; // template.innerHTML에 직접 쓴거라 null이 아님 & HTMLElement가 확실하므로 타입어서션 사용
+    // template.innerHTML에 직접 쓴거라 null이 아님 & HTMLElement가 확실하므로 타입어서션 사용
+    super(template.content.firstElementChild! as HTMLElement);
+
 
     const imageElement = this.element.querySelector('.image__thumbnail')! as HTMLImageElement;
     imageElement.setAttribute('src', url);
@@ -24,8 +25,5 @@ export class ImageComponent {
     const titleElement = this.element.querySelector('.image__title')! as HTMLParagraphElement;
     titleElement.textContent = title;
 
-  }
-  attachTo(parent:HTMLElement, position: InsertPosition = 'afterbegin'):void {
-    parent.insertAdjacentElement(position, this.element);
   }
 }
