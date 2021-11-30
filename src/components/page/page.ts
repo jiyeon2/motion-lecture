@@ -5,7 +5,23 @@ export interface Composable {
   addChild(child: Component): void;
 }
 type OnCloseListener = () => void;
-class PageItemComponent extends BaseComponent<HTMLElement> implements Composable{
+
+
+
+// pageItemComponenet 의 필수 규격사항
+// .close 버튼 가지고 있다
+// setOnCloseListener 함수가 있다
+interface SectionContainer extends Component, Composable {
+  setOnCloseListener(listener: OnCloseListener): void;
+}
+
+// 생성자를 정의하는 타입
+type SectionContainerConstructor = {
+  // 아무것도 받지 않는 생성자 -> SectionContainer 인스턴스 생성
+  new (): SectionContainer;
+}
+
+export class PageItemComponent extends BaseComponent<HTMLElement> implements SectionContainer{
   private closeListener?: OnCloseListener;
   constructor(){
     super(`
@@ -37,13 +53,16 @@ class PageItemComponent extends BaseComponent<HTMLElement> implements Composable
 }
 
 export class PageComponent extends BaseComponent<HTMLUListElement> implements Composable{
-  constructor() {
+  // PageItemComponent 말고 다른 형태 DarkPageItemComponent 도 사용할 수 있고, AnimationPageItemComponent도 사용할수 있도록
+  // dependency injection 하려면??
+  
+  constructor(private pageItemContructor: SectionContainerConstructor) {
     // 상속받는 자식 클래스에서는 super 통해 부모클래스의 생성자를 반드시 호출해야함
     super('<ul class="page"></ul>');
   }
 
   addChild(section: Component){
-    const item = new PageItemComponent();
+    const item = new this.pageItemContructor();
     item.addChild(section);
     item.attachTo(this.element, 'beforeend');
 
