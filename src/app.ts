@@ -1,6 +1,7 @@
 // 지금 프로젝트에서는 웹팩 안쓰고 있고, <script> 태그로 불러오지도 않고 html에서 type="module" 사용하고 있음
 // 이 경우 import 할 때 .js 확장자 붙여야 브라우저가 이해할 수 있다고 함
 import { Component } from "./components/component.js";
+import { Dialog, DialogComponent } from "./components/dialog.js";
 import { ImageComponent } from "./components/page/item/image.js";
 import { NoteComponent } from "./components/page/item/note.js";
 import { TodoComponent } from "./components/page/item/todo.js";
@@ -12,6 +13,8 @@ type Mode = 'dark' | 'light';
 class App {
   private mode: Mode = 'light';
   private readonly page: Component & Composable;
+  private addImageButton: HTMLButtonElement;
+  private dialog: Component & Dialog;
   constructor(appRoot: HTMLElement){
     
     // 함수 실행하는데 클래스를 인자로 넘기는게 낯설어서 이해를 잘 못했음(처음에는 인터페이스 넘기는줄)
@@ -36,6 +39,13 @@ class App {
 
     const todo = new TodoComponent('todo tile@#@', 'todo 내용');
     this.page.addChild(todo);
+
+
+    this.dialog = new DialogComponent();
+    this.addImageButton = document.querySelector('#new-image')! as HTMLButtonElement;
+    this.addImageButton.onclick = () => {
+      this.dialog.attachTo(appRoot);
+    }
 
   }
 }

@@ -4,7 +4,7 @@ import { BaseComponent, Component } from "../component.js";
 export interface Composable {
   addChild(child: Component): void;
 }
-type OnCloseListener = () => void;
+export type OnCloseListener = () => void;
 
 
 
@@ -21,7 +21,7 @@ type SectionContainerConstructor = {
   new (): SectionContainer;
 }
 
-interface Closable {
+export interface Closable {
   setOnCloseListener(listener: OnCloseListener): void;
 }
 
