@@ -1,21 +1,19 @@
 // 지금 프로젝트에서는 웹팩 안쓰고 있고, <script> 태그로 불러오지도 않고 html에서 type="module" 사용하고 있음
 // 이 경우 import 할 때 .js 확장자 붙여야 브라우저가 이해할 수 있다고 함
 import { Component } from "./components/component.js";
-import { UrlInput, InputDialog, BodyInput } from "./components/dialog/dialog.js";
+import { InputDialog } from "./components/dialog/dialog.js";
+import { MediaSectionInput } from "./components/dialog/input/media-input.js";
+import { TextSectionInput } from "./components/dialog/input/text-input.js";
 import { ImageComponent } from "./components/page/item/image.js";
 import { NoteComponent } from "./components/page/item/note.js";
 import { TodoComponent } from "./components/page/item/todo.js";
 import { VideoComponent } from "./components/page/item/video.js";
-// import { ImageComponent } from "./components/page/item/image.js";
-// import { NoteComponent } from "./components/page/item/note.js";
-// import { TodoComponent } from "./components/page/item/todo.js";
-// import { VideoComponent } from "./components/page/item/video.js";
-import { Composable,  PageComponent, PageItemComponent } from "./components/page/page.js";
+import { Composable, PageComponent, PageItemComponent } from "./components/page/page.js";
 
 
 class App {
   private readonly page: Component & Composable;
-  constructor(appRoot: HTMLElement){
+  constructor(appRoot: HTMLElement, dialogRoot: HTMLElement){
     
     // 함수 실행하는데 클래스를 인자로 넘기는게 낯설어서 이해를 잘 못했음(처음에는 인터페이스 넘기는줄)
     // PageItemComponent는 인터페이스가 아니라 클래스임 
@@ -27,108 +25,74 @@ class App {
     // this.page = new PageComponent(DarkPageItemComponent);
     this.page.attachTo(appRoot);
 
-    // const image = new ImageComponent('image title','https://picsum.photos/600/300');
-    // this.page.addChild(image);
-
-    // const video = new VideoComponent('video title!@!', 'https://youtu.be/BcbmFxbdsJ0');
-    // this.page.addChild(video);
-
-    // const note = new NoteComponent('note title@!~~~~', '노트 내용');
-    // this.page.addChild(note);
-
-    // const todo = new TodoComponent('todo tile@#@', 'todo 내용');
-    // this.page.addChild(todo);
-
     const imageBtn = document.querySelector('#new-image')! as HTMLButtonElement;
     imageBtn.addEventListener('click', () => {
       const dialog = new InputDialog();
+      const inputSection = new MediaSectionInput();
+      dialog.addChild(inputSection);
+      dialog.attachTo(dialogRoot);
 
-      const input = new UrlInput();
-      dialog.addChild(input);
 
       dialog.setOnCloseListener(() => {
-        dialog.removeFrom(document.body);
+        dialog.removeFrom(dialogRoot);
       })
       dialog.setOnSubmitListener(() => {
-        const title = input.title.value;
-        const url = input.url.value;
-        const image = new ImageComponent(title,url);
-        this.page.addChild(image);
-        input.title.value = '';
-        input.url.value = '';
-        dialog.removeFrom(document.body);
+        this.page.addChild(new ImageComponent(inputSection.title, inputSection.url));
+        dialog.removeFrom(dialogRoot);
       })
-      
-      dialog.attachTo(document.body);
     })
 
     const videoBtn = document.querySelector('#new-video')! as HTMLButtonElement;
     videoBtn.addEventListener('click', () => {
       const dialog = new InputDialog();
+      const inputSection = new MediaSectionInput();
+      dialog.addChild(inputSection);
+      dialog.attachTo(dialogRoot);
 
-      const input = new UrlInput();
-      dialog.addChild(input);
 
       dialog.setOnCloseListener(() => {
-        dialog.removeFrom(document.body);
+        dialog.removeFrom(dialogRoot);
       })
       dialog.setOnSubmitListener(() => {
-        const title = input.title.value;
-        const url = input.url.value;
-        const image = new VideoComponent(title,url);
-        this.page.addChild(image);
-        input.title.value = '';
-        input.url.value = '';
-        dialog.removeFrom(document.body);
+        this.page.addChild( new VideoComponent(inputSection.title, inputSection.url));
+        dialog.removeFrom(dialogRoot);
       })
-      
-      dialog.attachTo(document.body);
     })
 
     const noteBtn = document.querySelector('#new-note')! as HTMLButtonElement;
     noteBtn.addEventListener('click', () => {
       const dialog = new InputDialog();
+      const inputSection = new TextSectionInput();
+      dialog.addChild(inputSection);
+      dialog.attachTo(dialogRoot);
 
-      const input = new BodyInput();
-      dialog.addChild(input);
 
       dialog.setOnCloseListener(() => {
-        dialog.removeFrom(document.body);
+        dialog.removeFrom(dialogRoot);
       })
       dialog.setOnSubmitListener(() => {
-        const title = input.title.value;
-        const body = input.body.value;
-        const image = new NoteComponent(title,body);
-        this.page.addChild(image);
-        input.title.value = '';
-        input.body.value = '';
-        dialog.removeFrom(document.body);
+        this.page.addChild(new NoteComponent(inputSection.title, inputSection.body));
+        dialog.removeFrom(dialogRoot);
       })
-      
-      dialog.attachTo(document.body);
+   
     })
 
     const todoBtn = document.querySelector('#new-todo')! as HTMLButtonElement;
     todoBtn.addEventListener('click', () => {
       const dialog = new InputDialog();
+      const inputSection = new TextSectionInput();
+      dialog.addChild(inputSection);
+      dialog.attachTo(dialogRoot);
 
-      const input = new BodyInput();
-      dialog.addChild(input);
 
       dialog.setOnCloseListener(() => {
-        dialog.removeFrom(document.body);
+        dialog.removeFrom(dialogRoot);
       })
       dialog.setOnSubmitListener(() => {
-        const title = input.title.value;
-        const body = input.body.value;
-        const image = new TodoComponent(title,body);
-        this.page.addChild(image);
-        input.title.value = '';
-        input.body.value = '';
-        dialog.removeFrom(document.body);
+        this.page.addChild(new TodoComponent(inputSection.title, inputSection.body));
+        dialog.removeFrom(dialogRoot);
       })
-      
-      dialog.attachTo(document.body);
+     
     })
 
   }
@@ -136,4 +100,4 @@ class App {
 
 // index.html에 하드코딩되어 있는 엘리먼트이므로 반드시 존재함
 // 변수 뒤 !는 non-null assertion operator
-new App(document.querySelector('.document')! as HTMLElement);
+new App(document.querySelector('.document')! as HTMLElement, document.body);
